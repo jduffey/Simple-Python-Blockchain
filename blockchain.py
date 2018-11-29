@@ -10,12 +10,13 @@ class Block:
     hash = None
     nonce = 0
     previous_hash = 0x0
+    startTime = 0
     timestamp = 0
 
     def __init__(self, data):
         self.data = data
 
-    def hash(self):      
+    def hash(self):
         h = hashlib.sha256()
         h.update(
         str(self.nonce).encode('utf-8') +
@@ -27,35 +28,40 @@ class Block:
         return h.hexdigest()
 
     def __str__(self):
+        hashTime = self.timestamp - self.startTime
         return ( "Block Hash: " + str(self.hash()) +
                  "\nBlockNo: " + str(self.blockNo) +
                  "\nBlock Data: " + str(self.data) +
-                 "\nHashes: " + str(self.nonce) +
+                 "\nHashes (nonce): " + str(self.nonce) +
                  "\nTimestamp: " + str(self.timestamp) +
+                 "\nHashTime: " + str(hashTime) +
                  "\n--------------")
 
 class Blockchain:
 
-    diff = 15
+    diff = 20
     maxNonce = 2**32
     target = 2 ** (256-diff)
 
     block = Block("v")
     head = block
 
-    def add(self, block):
+    def add(self, block, startTime):
 
         block.previous_hash = self.block.hash()
         block.blockNo = self.block.blockNo + 1
         block.timestamp = datetime.datetime.now()
+        block.startTime = startTime
 
         self.block.next = block
         self.block = self.block.next
 
     def mine(self, block):
+        startTime = datetime.datetime.now()
+        print("Start:", startTime)
         for n in range(self.maxNonce):
             if int(block.hash(), 16) <= self.target:
-                self.add(block)
+                self.add(block, startTime)
                 print(block)
                 break
             else:
