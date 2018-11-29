@@ -43,7 +43,7 @@ class Blockchain:
     maxNonce = 2**32
     target = 2 ** (256-diff)
 
-    block = Block("v")
+    block = Block("This string doesn't matter")
     head = block
 
     def add(self, block, startTime):
